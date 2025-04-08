@@ -1,0 +1,112 @@
+{
+    "metadata": {
+      "visual": {
+        "presentation": {
+          "themes": {
+            "abea35a0-bb9c-484a-bcf3-1b40c92f53c3": {
+              "themeColors": {
+                "primaryColor": "#246db5",
+                "secondaryColor": "#5cadff",
+                "backgroundColor": "#ffffff",
+                "textColor": "#1a1a1a",
+                "primaryTextColor": "#ffffff"
+              },
+              "template": "basic",
+              "splashScreen": {
+                "storedData": {
+                  "handle": "/images/app/generic-flow.jpg",
+                  "mimeType": "image/jpeg"
+                }
+              }
+            }
+          },
+          "theme": "abea35a0-bb9c-484a-bcf3-1b40c92f53c3"
+        }
+      },
+      "intent": "give me a joke based on my input",
+      "instruction": "Generate a personalized joke based on your input!",
+      "tagline": "",
+      "revision_intents": [],
+      "parameters": {
+        "joke_topic": {
+          "title": "Joke_topic",
+          "usedIn": [
+            "node_step_generated_joke"
+          ],
+          "description": "Enter your joke topic",
+          "modality": [
+            "Any"
+          ]
+        }
+      }
+    },
+    "assets": {
+      "@@thumbnail": {
+        "metadata": {
+          "title": "Thumbnail",
+          "type": "file"
+        },
+        "data": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjUwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDI1MCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cmVjdCB4PSIxMC4wMCIKICAgICAgICAgICAgICAgICAgICB5PSI2My45NyIKICAgICAgICAgICAgICAgICAgICB3aWR0aD0iOTkuNjciCiAgICAgICAgICAgICAgICAgICAgaGVpZ2h0PSI3Mi4wNyIKICAgICAgICAgICAgICAgICAgICByeD0iMy41IgogICAgICAgICAgICAgICAgICAgIGZpbGw9IndoaXRlIgogICAgICAgICAgICAgICAgICAgIHN0cm9rZT0iIzIwYTIwMiIgLz4KPHJlY3QgeD0iMTQwLjMzIgogICAgICAgICAgICAgICAgICAgIHk9IjYzLjk3IgogICAgICAgICAgICAgICAgICAgIHdpZHRoPSI5OS42NyIKICAgICAgICAgICAgICAgICAgICBoZWlnaHQ9IjcyLjA3IgogICAgICAgICAgICAgICAgICAgIHJ4PSIzLjUiCiAgICAgICAgICAgICAgICAgICAgZmlsbD0id2hpdGUiCiAgICAgICAgICAgICAgICAgICAgc3Ryb2tlPSIjMmU4YmU4IiAvPgogICAgICAKICAgIDwvc3ZnPg=="
+      }
+    },
+    "title": "JokeBot",
+    "description": "",
+    "version": "0.0.1",
+    "nodes": [
+      {
+        "id": "input-7a2119c0",
+        "type": "input",
+        "metadata": {
+          "visual": {
+            "x": 460,
+            "y": 320,
+            "collapsed": "collapsed",
+            "outputHeight": 88
+          },
+          "title": "Input"
+        },
+        "configuration": {
+          "schema": {
+            "properties": {
+              "context": {
+                "type": "array",
+                "title": "Context",
+                "items": {
+                  "type": "object",
+                  "examples": [],
+                  "behavior": [
+                    "llm-content"
+                  ]
+                },
+                "default": "[{\"role\":\"user\",\"parts\":[{\"text\":\"\"}]}]"
+              }
+            },
+            "type": "object",
+            "required": []
+          }
+        }
+      },
+      {
+        "id": "specialist-89819907",
+        "type": "specialist",
+        "metadata": {
+          "visual": {
+            "x": 800,
+            "y": 320,
+            "collapsed": "collapsed",
+            "outputHeight": 88
+          },
+          "title": "Model"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "input-7a2119c0",
+        "to": "specialist-89819907",
+        "out": "context",
+        "in": "in"
+      }
+    ],
+    "url": "https://boards-dot-fengwantestprovision.uc.r.appspot.com/boards/@fengwan@google.com/b3ff830a-d05c-456b-b873-bad6e565ce8a.bgl.json"
+  }

@@ -31,9 +31,11 @@ export const middlewares = {
 
 export function createServer(config: ServerConfig): Express {
   const server = express();
+  console.log("Input server config is %s", config);
   addMiddleware(server, config);
   server.use(createRouter(config));
-
+  console.log("Debug log: create server and see the server config");
+  console.log("config is: %s", config);
   return server;
 }
 
@@ -44,12 +46,14 @@ export function addMiddleware(server: Express, config: ServerConfig) {
 }
 
 function createStore(storageProvider: StorageProvider): BoardServerStore {
-  switch (storageProvider) {
-    case "in-memory":
-      return new InMemoryStorageProvider();
-    case "firestore":
-      return new FirestoreStorageProvider();
-  }
+  console.log("storage provider is: %s", storageProvider);
+  return new InMemoryStorageProvider();
+  // switch (storageProvider) {
+  //   case "in-memory":
+  //     return new InMemoryStorageProvider();
+  //   case "firestore":
+  //     return new FirestoreStorageProvider();
+  // }
 }
 
 export function createRouter(config: ServerConfig): Router {

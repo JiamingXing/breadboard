@@ -4,8 +4,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export type AsyncGenNext<T> = (value: T) => Promise<void>;
-export type AsyncGenCallback<T> = (next: AsyncGenNext<T>) => Promise<void>;
+// yield* asyncGen<HarnessRunResult>(async (next) => {
+//       const kits = configureSecretAsking(
+//         config.interactiveSecrets,
+//         await configureKits(config),
+//         next
+//       );
 
 // only here for historical purposes. Use asyncGen instead.
 // Remove this when we're sure we don't need it anymore.
@@ -119,46 +123,6 @@ class AsyncGenQueue<T> {
   }
 }
 
-class AsyncGenIterator<T> implements AsyncIterator<T, void, unknown> {
-  #callback: AsyncGenCallback<T>;
-  #firstTime = true;
-  #queue = new AsyncGenQueue<T>();
-
-  constructor(callback: AsyncGenCallback<T>) {
-    this.#callback = callback;
-  }
-
-  /**
-   * Called by the callback to advance to the next value.
-   * Roughly equivalent to "yield":
-   * ```ts
-   * yield value;
-   * ```
-   * same as
-   * ```ts
-   * await next(value);
-   * ```
-   * @param value
-   */
-  async #next(value: T): Promise<void> {
-    return this.#queue.write(value);
-  }
-
-  async next(): Promise<IteratorResult<T, void>> {
-    if (this.#firstTime) {
-      this.#firstTime = false;
-      this.#callback(this.#next.bind(this))
-        .then(() => {
-          this.#queue.close();
-        })
-        .catch((err) => {
-          this.#queue.abort(err);
-        });
-    }
-    return this.#queue.read();
-  }
-}
-
 /**
  * Converts async/await style code into an async generator.
  * Useful when you need to combine arrow-style functions and yield.
@@ -194,9 +158,50 @@ class AsyncGenIterator<T> implements AsyncIterator<T, void, unknown> {
  * @returns An async generator.
  */
 export const asyncGen = <T>(callback: AsyncGenCallback<T>) => {
+  // Basically, asyncGen generates an async iterator and can iterate through the 
+  // async results from the caller....
   return {
     [Symbol.asyncIterator]() {
       return new AsyncGenIterator<T>(callback);
     },
   };
 };
+
+// Defines a function type named AsyncGenNext that
+// accepts single parameter named value with type T and the return type is Promise<Void>
+export type AsyncGenNext<T> = (value: T) => Promise<void>;
+export type AsyncGenCallback<T> = (next: AsyncGenNext<T>) => Promise<void>;
+
+class AsyncGenIterator<T> implements AsyncIterator<T, void, unknown> {
+  // # indicates private in typescript
+  #callback: AsyncGenCallback<T>;
+  #firstTime = true;
+  #queue = new AsyncGenQueue<T>();
+
+  constructor(callback: AsyncGenCallback<T>) {
+    this.#callback = callback;
+  }
+
+  // This private next function will be used to connect with callback
+  async #next(value: T): Promise<void> {
+    return this.#queue.write(value);
+  }
+
+  async next(): Promise<IteratorResult<T, void>> {
+    if (this.#firstTime) {
+      this.#firstTime = false;
+      // this.#next.bind(this) is a function definition defined in this class
+      // and will be passed into the callback, and will be called in the callback logic
+      this.#callback(this.#next.bind(this))
+        .then(() => {
+          this.#queue.close();
+        })
+        .catch((err) => {
+          this.#queue.abort(err);
+        });
+    }
+    return this.#queue.read();
+  }
+}
+
+

@@ -44,9 +44,15 @@ const configureKits = async (config: RunConfig): Promise<Kit[]> => {
   return [...kits, ...config.kits];
 };
 
+// async function* is an asynchronous generator function, which can pause/resume execution with yield keyword...
+// the result of async generator function is a async interable
 export async function* run(config: RunConfig) {
   if (!config.remote) {
-    yield* asyncGen<HarnessRunResult>(async (next) => {
+    yield* asyncGen<HarnessRunResult>(
+      // whole function is a callback passed in
+      // But What is this next? Where is the exact next passed in?
+      // IIUC, next is type AsyncGenNext<T>, what is th real function definition here...
+      async (next) => {
       const kits = configureSecretAsking(
         config.interactiveSecrets,
         await configureKits(config),
@@ -54,9 +60,13 @@ export async function* run(config: RunConfig) {
       );
 
       for await (const data of runLocally(config, kits)) {
+        // Write data to iterator queue defined in AsyncGenIterator
         await next(data);
       }
-    });
+    }
+    // callback passed in ends here..
+  );
+
   } else if (config.remote.type === "worker") {
     const workerURL = config.remote && config.remote.url;
     if (!workerURL) {

@@ -16,6 +16,7 @@ export const handleRunGraphRequest = async (
   request: ServerRunRequest,
   config: ServerRunConfig
 ): Promise<void> => {
+  // Default input fron ServerRunConfig right now only contains { model: "gemini-1.5-flash-latest" }
   const {
     url,
     kits,
@@ -27,19 +28,42 @@ export const handleRunGraphRequest = async (
     graph,
     graphStore,
   } = config;
+  console.log("Printing default inputs....");
+  console.dir(defaultInputs);
+  // Real inputs from the ServerRunRequest that comes from the request body
+  // const {
+  //   $next: next,
+  //   $diagnostics: diagnostics,
+  //   ...inputs
+  // } = req.body as Record<string, any>;
   const { next, inputs, diagnostics = false } = request;
 
   let inputsToConsume = next ? undefined : inputs;
-
+  // Fetch the previous state? The next is the ticket of previous stored state key
+  if (next) {
+    console.log("Resume from previous state with next as %s", next);
+  }
   const resumeFrom = await stateStore?.load(next);
 
   const state = createRunStateManager(resumeFrom, inputs);
 
+  console.log("Printing url... %s", url);
+  // console.log("Printing kits...");
+  // console.dir(kits);
+  console.log("Printing loader...");
+  console.dir(loader);
+  // console.log("Printing data store...");
+  // console.dir(dataStore);
+  console.log("Printing inputs fron request...");
+  console.dir(inputs);
+
+  // runner returns asynchronous generator that will yield type as HarnessResult...
+  console.log("Run in the graph runner...");
   const runner = run({
     runner: graph,
     url,
     kits,
-    loader,
+    loader, 
     store: dataStore,
     inputs: defaultInputs,
     interactiveSecrets: false,
@@ -47,10 +71,12 @@ export const handleRunGraphRequest = async (
     state,
     graphStore,
   });
-
+  
+  // What is the filter here?
   const filter = new DiagnosticsFilter(writer, diagnostics);
 
   for await (const result of runner) {
+    console.log("Printing each result from runner... %s", result);
     const { type, data, reply } = result;
     switch (type) {
       case "graphstart": {
@@ -85,6 +111,8 @@ export const handleRunGraphRequest = async (
         } else {
           const reanimationState = state.lifecycle().reanimationState();
           const next = await stateStore.save(reanimationState);
+          console.log("Need input from user, store the reanimation state and stop here... the stored ticket is %s", next);
+          // Where can we see the next ticket when we stops here with filter??
           await filter.writeInput(data, next);
           await writer.close();
           return;

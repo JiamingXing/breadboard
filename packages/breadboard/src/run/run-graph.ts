@@ -35,21 +35,34 @@ export async function* runGraph(
   args: RunArguments = {},
   resumeFrom?: TraversalResult
 ): AsyncGenerator<BreadboardRunResult> {
+  console.log("Start the actual running graph logic...");
+  console.log("Printing resumeForm that is type of TraversalResult... %s", resumeFrom);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { inputs: initialInputs, start, stopAfter, ...context } = args;
   const { probe, state, invocationPath = [] } = context;
 
+  console.log("Printing the current context...");
+  console.dir(context);
+
   graphToRun = resolveGraphUrls(graphToRun);
 
   let graph = resolveGraph(graphToRun);
+  // console.log("resolved graph and printing the graph...");
+  // console.dir(graph);
 
   if (isImperativeGraph(graph)) {
+    console.log("current graph is imperative graph");
     graph = toDeclarativeGraph(graph);
     graphToRun = { graph };
   }
 
+  console.log("Current graph state in run-graph is ...");
+  console.dir(state);
+  // What is state lifycycle?
   const lifecycle = state?.lifecycle();
+  console.dir(lifecycle);
   yield* asyncGen<BreadboardRunResult>(async (next) => {
+    console.log("Initialize the node invoker...");
     const nodeInvoker = new NodeInvoker(args, graphToRun, next);
 
     lifecycle?.dispatchGraphStart(graph.url!, invocationPath);
@@ -57,13 +70,17 @@ export async function* runGraph(
     let invocationId = 0;
 
     let prepareToStopAtStartNode = false;
-
+    // What is state and reanimation
     const reanimation = state?.reanimation();
+    console.log("Printing the reanimation from the current state...");
+    console.dir(reanimation);
     if (reanimation) {
+      // What is frame here..?
       const frame = reanimation.enter(invocationPath);
       const mode = frame.mode();
       switch (mode) {
         case "replay": {
+          console.log("replay mode...");
           // This can only happen when `runGraph` is called by `invokeGraph`,
           // which means that all we need to do is provide the output and
           // return.
@@ -73,8 +90,10 @@ export async function* runGraph(
           return;
         }
         case "resume": {
+          console.log("resume mode...");
           const { result, invocationPath } = frame.resume();
-
+          // invocationPath is generated from visits
+          console.log("Print result from frame.resume()... %s and %s", result, invocationPath);
           resumeFrom = result;
           // Adjust invocationId to match the point from which we are resuming.
           invocationId = invocationPath[invocationPath.length - 1];
@@ -160,7 +179,10 @@ export async function* runGraph(
     }
 
     const path = () => [...invocationPath, invocationId];
+    console.log("Printing the current invocation path object...");
+    console.dir(path());
 
+    // Does the Traversal machine contain the real graph execution logic?
     const machine = new TraversalMachine(graph, resumeFrom, start);
     if (!resumeFrom) {
       await probe?.report?.({

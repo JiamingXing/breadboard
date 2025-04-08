@@ -1,0 +1,146 @@
+{
+    "title": "new_board",
+    "description": "A blank board. Use it as a starting point for your creations.",
+    "version": "0.0.1",
+    "nodes": [
+      {
+        "id": "input-3d8ade42",
+        "type": "input",
+        "metadata": {
+          "visual": {
+            "x": -760,
+            "y": -527,
+            "collapsed": "expanded"
+          },
+          "title": "Input",
+          "logLevel": "debug"
+        },
+        "configuration": {
+          "schema": {
+            "properties": {
+              "input_id_1": {
+                "type": "array",
+                "title": "input_context_schema_1",
+                "items": {
+                  "type": "object",
+                  "examples": [],
+                  "behavior": [
+                    "llm-content"
+                  ]
+                },
+                "default": "[{\"role\":\"user\",\"parts\":[{\"text\":\"Tom and Jerry\"}]}]",
+                "description": "This is the first schema I defined for this input component"
+              },
+              "input_id_2": {
+                "type": "array",
+                "title": "input_context_schema_2",
+                "items": {
+                  "type": "object",
+                  "examples": [],
+                  "behavior": [
+                    "llm-content"
+                  ],
+                  "default": "[{\"role\":\"user\",\"parts\":[{\"text\":\"\"}]}]"
+                },
+                "description": "This is the second schema I defined for this input component",
+                "default": "[{\"parts\":[{\"text\":\"Superman\"}],\"role\":\"user\"}]"
+              }
+            },
+            "type": "object",
+            "required": []
+          }
+        }
+      },
+      {
+        "id": "output-9353fe9c",
+        "type": "output",
+        "metadata": {
+          "visual": {
+            "x": 185,
+            "y": -537,
+            "collapsed": "expanded"
+          },
+          "title": "Gemini answered output",
+          "logLevel": "debug",
+          "description": "This is the output that will collect the gemini generated joke and share with the user"
+        },
+        "configuration": {
+          "schema": {
+            "properties": {
+              "output_port_id_1": {
+                "type": "array",
+                "title": "output port",
+                "items": {
+                  "type": "object",
+                  "examples": [],
+                  "behavior": [
+                    "llm-content"
+                  ]
+                },
+                "default": "[{\"parts\":[{\"text\":\"If Gemini can not make it, should I give a default joke?\"}],\"role\":\"user\"}]",
+                "description": ""
+              }
+            },
+            "type": "object",
+            "required": []
+          }
+        }
+      },
+      {
+        "id": "specialist-c9c710ed",
+        "type": "specialist",
+        "metadata": {
+          "visual": {
+            "x": -293,
+            "y": -590,
+            "collapsed": "expanded"
+          },
+          "title": "Gemini call robot",
+          "logLevel": "debug",
+          "description": "This is a gemini model robot to make a single gemini call to answer user requirement"
+        },
+        "configuration": {
+          "model": "gemini-1.5-flash-latest",
+          "persona": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "You will collect the user input and answer the requirement. For this board, we are mainly focusing on telling a joke with the user input topic."
+              }
+            ]
+          },
+          "task": {
+            "role": "user",
+            "parts": [
+              {
+                "text": ""
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "input-3d8ade42",
+        "to": "specialist-c9c710ed",
+        "out": "input_id_1",
+        "in": "in"
+      },
+      {
+        "from": "input-3d8ade42",
+        "to": "specialist-c9c710ed",
+        "out": "input_id_2",
+        "in": "in"
+      },
+      {
+        "from": "specialist-c9c710ed",
+        "to": "output-9353fe9c",
+        "out": "out",
+        "in": "output_port_id_1"
+      }
+    ],
+    "metadata": {
+      "visual": {}
+    }
+  }

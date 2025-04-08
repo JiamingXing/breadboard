@@ -23,8 +23,10 @@ async function runHandler(
   req: Request,
   res: Response
 ): Promise<void> {
+  console.log("Starting point of runBoard API...");
   const store: BoardServerStore = req.app.locals.store;
 
+  // The board id contasin user_id and board_name
   const boardId: BoardId = res.locals.boardId;
   const path = asPath(boardId.user, boardId.name);
 
@@ -34,11 +36,15 @@ async function runHandler(
   url.pathname = `boards/${path}`;
   url.search = "";
 
+  // Destruct property named "$next", "$diagnostics" from req.body, rename them as "next" and "diagnostics"
+  // and rest of properties as inputs
   const {
     $next: next,
     $diagnostics: diagnostics,
     ...inputs
   } = req.body as Record<string, any>;
+  console.log("The next(ticket) is from the request body %s", next);
+
   const writer = new WritableStream<RemoteMessage>({
     write(chunk) {
       res.write(`data: ${JSON.stringify(chunk)}\n\n`);
@@ -47,7 +53,12 @@ async function runHandler(
   res.setHeader("Content-Type", "text/event-stream");
   res.statusCode = 200;
 
+  // $key from the request body is like user password
+  // each user_id has a unique user_key stored in the database, firestore/in-memory
   const userId = await verifyKey(inputs, store);
+  console.log("Read userId from verifyKey: %s", userId);
+
+  // using a WritableStream to send Server-Sent Events to the client
   if (!userId) {
     await writer.write([
       "graphstart",

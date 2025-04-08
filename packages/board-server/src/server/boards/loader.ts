@@ -5,8 +5,12 @@ import type { BoardId } from "../types.js";
 
 export function parseBoardId(opts?: { addJsonSuffix?: boolean }) {
   return (req: Request, res: Response, next: NextFunction) => {
+    console.log("Checking logic when we call run board to parse board id from request url...");
+    // console.dir(req);
+    // Printing from req,  params: { user: '110099467630814779452', name: 'jimmy-test' },
     let { user = "", name = "" } = req.params;
-    if (!!opts?.addJsonSuffix) {
+    console.log("User is %s and name is %s", user, name);
+    if (opts?.addJsonSuffix) {
       name += ".json";
     }
     let boardId: BoardId = {
@@ -24,6 +28,7 @@ export function loadBoard(opts?: { addJsonSuffix?: boolean }): RequestHandler {
     res: Response,
     next: NextFunction
   ): Promise<void> => {
+    console.log("Prepare to load board from board server storage...");
     try {
       let name = req.params.name;
       if (!name) {

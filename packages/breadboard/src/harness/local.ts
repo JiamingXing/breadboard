@@ -114,6 +114,8 @@ const load = async (config: RunConfig): Promise<GraphToRun> => {
 };
 
 export async function* runLocally(config: RunConfig, kits: Kit[]) {
+  console.log("Start run locally... Printing the runConfig");
+  console.dir(config);
   yield* asyncGen<HarnessRunResult>(async (next) => {
     const graphToRun: GraphToRun = config.runner
       ? { graph: config.runner }
@@ -123,7 +125,7 @@ export async function* runLocally(config: RunConfig, kits: Kit[]) {
     const fileSystem = config.fileSystem;
     const { base, signal, inputs, state, start, stopAfter, graphStore } =
       config;
-
+    console.log("Prepare to start the real run graph logic from run locally....");
     try {
       let last: LastNode | undefined;
 
@@ -149,6 +151,7 @@ export async function* runLocally(config: RunConfig, kits: Kit[]) {
         graphStore,
       })) {
         last = maybeSaveResult(data, last);
+        // data is type of BreadboardRunResult
         await next(fromRunnerResult(data));
       }
       await next(endResult(last));

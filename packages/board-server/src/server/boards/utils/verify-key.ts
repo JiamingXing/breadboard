@@ -13,6 +13,7 @@ export async function verifyKey(
   store: BoardServerStore
 ): Promise<string> {
   const key: string | undefined = inputs["$key"];
+  console.log("Prepare to verify key and key from input is %s", key);
   delete inputs["$key"];
   if (!key) {
     return "";

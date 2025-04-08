@@ -26,6 +26,8 @@ export class FirestoreStorageProvider
   #database: Firestore;
 
   constructor(opts?: { database?: Firestore }) {
+    console.log("Initialize fire store consturctor");
+    console.log("Firestore id is: %s", process.env["FIRESTORE_DB_NAME"] || "board-server");
     this.#database =
       opts?.database ||
       new Firestore({
@@ -34,6 +36,7 @@ export class FirestoreStorageProvider
   }
 
   async createUser(username: string, apiKey: string): Promise<void> {
+    console.log("firestore create user called...local server might not hit this");
     const path = `users/${username}`;
     if ((await this.#database.doc(path).get()).exists) {
       throw Error(`Account ${username} already exists`);
@@ -56,6 +59,7 @@ export class FirestoreStorageProvider
     user: string,
     state: ReanimationState
   ): Promise<string> {
+    console.log("Save reanimation state to firestore...");
     const timestamp = new Date();
     const expireAt = new Date(timestamp.getTime() + EXPIRATION_TIME_MS);
     const docRef = this.#getReanimationStateDoc(user);
@@ -67,6 +71,7 @@ export class FirestoreStorageProvider
     user: string,
     ticket: string
   ): Promise<ReanimationState | undefined> {
+    console.log("Load previous reanimation state from firestore...");
     const data = await this.#getReanimationStateDoc(user, ticket).get();
     if (!data.exists) {
       return undefined;
@@ -84,10 +89,12 @@ export class FirestoreStorageProvider
   }
 
   async findUserIdByApiKey(apiKey: string): Promise<string> {
+    console.log("Checking whether apiKey %s belongs to the user", apiKey);
     const users = await this.#database
       .collection("users")
       .where("apiKey", "==", apiKey)
       .get();
+    console.log("users is: %s", users.docs[0]?.id ?? "");
     return users.docs[0]?.id ?? "";
   }
 
@@ -110,6 +117,7 @@ export class FirestoreStorageProvider
     owner?: string;
     requestingUserId?: string;
   }): Promise<StorageBoard | null> {
+    console.log("firestore loadBoard being called... name is %s, owner is %s, and requestingUserId is %s", opts.name, opts.owner, opts.requestingUserId);
     const { name, owner, requestingUserId = "" } = opts;
 
     // If an owner is given, an exact path can be used
@@ -154,6 +162,7 @@ export class FirestoreStorageProvider
   }
 
   async createBoard(userId: string, name: string): Promise<void> {
+    console.log("firestore create empty board hit");
     await this.#getBoardDoc(userId, name).set({
       name,
       graph: JSON.stringify(blank()),
@@ -166,6 +175,7 @@ export class FirestoreStorageProvider
 
   #getBoardDoc(owner: string, name: string): DocumentReference {
     const path = `workspaces/${owner}/boards/${name}`;
+    console.log("firestore document path: %s", path);
     return this.#database.doc(path);
   }
 }

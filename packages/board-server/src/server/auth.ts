@@ -35,6 +35,7 @@ export function getUserCredentials(): RequestHandler {
     next: NextFunction
   ): Promise<void> => {
     const key = req.query.API_KEY as string | undefined;
+    console.log("Print key: %s", key);
     if (key) {
       res.locals.apiKey = key;
 
@@ -46,9 +47,11 @@ export function getUserCredentials(): RequestHandler {
     }
 
     const token = getAccessToken(req);
+    console.log("Print access token: %s", token);
     if (token) {
       res.locals.accessToken = token;
       const id = await AccessTokenCache.instance.get(token);
+      console.log("get id from access token: %s", id);
       if (ok(id)) {
         res.locals.userId = id;
       }
