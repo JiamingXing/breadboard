@@ -45,24 +45,31 @@ export class InMemoryStorageProvider implements BoardServerStore {
     console.log("in-memory store load board called...");
     const { name, owner, requestingUserId = "" } = opts;
     console.log("Load board %s for owner %s and requestingUserId %s", name, owner, requestingUserId);
-    if (owner) {
-      if (!this.#boards[owner]) {
-        console.log("No boards stored for owner % before", owner);
-        return null;
-      }
-      return this.#boards[owner][name] ?? null;
+    if (!requestingUserId) {
+      throw Error("No credential present in the request, annoymous user can not read any baords");
     }
+    if (!owner) {
+      throw Error("No owner specified in the request");
+    }
+    if (owner && requestingUserId && owner !== requestingUserId) {
+      throw Error("Requestor does not match with the board owner");
+    }
+    if (!this.#boards[owner]) {
+      console.log("No boards stored for owner % before", owner);
+      return null;
+    }
+    return this.#boards[owner][name] ?? null;
 
     // If only name is given, query all boards and find the first match
-    for (const id in this.#boards) {
-      const curBoards = this.#boards[id];
-      for (const boardName in curBoards) {
-        if (boardName === name) {
-          return curBoards[boardName] ?? null;
-        }
-      }
-    }
-    return null;
+    // for (const id in this.#boards) {
+    //   const curBoards = this.#boards[id];
+    //   for (const boardName in curBoards) {
+    //     if (boardName === name) {
+    //       return curBoards[boardName] ?? null;
+    //     }
+    //   }
+    // }
+    // return null;
   }
 
   async listBoards(userId: string): Promise<StorageBoard[]> {

@@ -58,6 +58,10 @@ export function getUserCredentials(): RequestHandler {
       }
     }
 
+    if (!key && !token) {
+      res.sendStatus(401);
+      return
+    }
     next();
   };
 }

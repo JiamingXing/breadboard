@@ -55,8 +55,12 @@ async function runHandler(
 
   // $key from the request body is like user password
   // each user_id has a unique user_key stored in the database, firestore/in-memory
-  const userId = await verifyKey(inputs, store);
-  console.log("Read userId from verifyKey: %s", userId);
+  // const userId = await verifyKey(inputs, store);
+  // console.log("Read userId from verifyKey: %s", userId);
+
+  // Get userId from request token..
+  const userId = res.locals.userId;
+  console.log("Get userId from request token: %s", userId);
 
   // using a WritableStream to send Server-Sent Events to the client
   if (!userId) {
