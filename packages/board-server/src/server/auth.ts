@@ -57,11 +57,6 @@ export function getUserCredentials(): RequestHandler {
         res.locals.userId = id;
       }
     }
-
-    if (!key && !token) {
-      res.sendStatus(401);
-      return
-    }
     next();
   };
 }
