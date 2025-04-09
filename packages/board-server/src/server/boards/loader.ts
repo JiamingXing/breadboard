@@ -28,7 +28,6 @@ export function loadBoard(opts?: { addJsonSuffix?: boolean }): RequestHandler {
     res: Response,
     next: NextFunction
   ): Promise<void> => {
-    console.log("Prepare to load board from board server storage...");
     try {
       let name = req.params.name;
       if (!name) {
@@ -40,6 +39,7 @@ export function loadBoard(opts?: { addJsonSuffix?: boolean }): RequestHandler {
       }
 
       const store: BoardServerStore = res.app.locals.store;
+      console.log("Prepare to load board from loader.ts... owner from req.params.user is %s and requesting user id from res.locals.userId(parse from token) is %s", req.params.user, res.locals.userId);
       const board = await store.loadBoard({
         name,
         owner: req.params.user,

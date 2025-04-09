@@ -23,6 +23,7 @@ async function list(req: Request, res: Response, next: NextFunction) {
   try {
     const store: BoardServerStore = req.app.locals.store;
     const userId = res.locals.userId;
+    console.log("Prepare to list boards for user with user_id(from res.locals.userId) %s in list.ts", userId);
     const boards: StorageBoard[] = await store.listBoards(userId);
 
     const response = boards.map((board) => toListEntry(userId, board));

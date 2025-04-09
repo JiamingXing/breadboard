@@ -47,6 +47,7 @@ export class InMemoryStorageProvider implements BoardServerStore {
     console.log("Load board %s for owner %s and requestingUserId %s", name, owner, requestingUserId);
     if (owner) {
       if (!this.#boards[owner]) {
+        console.log("No boards stored for owner % before", owner);
         return null;
       }
       return this.#boards[owner][name] ?? null;

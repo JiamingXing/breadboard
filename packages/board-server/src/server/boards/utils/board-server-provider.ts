@@ -29,6 +29,7 @@ export function createBoardLoader(
     if (!userStore || !boardName) {
       return null;
     }
+    console.log("Prepare to load board from board-server-provider.ts... owner from userStore parsed from path is %s and requesting user id from function argument is %s", userStore, userId);
     const board = await store.loadBoard({
       name: boardName,
       owner: userStore,

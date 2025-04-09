@@ -47,12 +47,13 @@ export function getUserCredentials(): RequestHandler {
     }
 
     const token = getAccessToken(req);
-    console.log("Print access token: %s", token);
+    console.log("Print current access token in auth.ts.getUserCredentials: %s", token);
     if (token) {
       res.locals.accessToken = token;
       const id = await AccessTokenCache.instance.get(token);
-      console.log("get id from access token: %s", id);
+      console.log("get user_id from current access token: %s", id);
       if (ok(id)) {
+        console.log("set user_id to res.locals.userId");
         res.locals.userId = id;
       }
     }
