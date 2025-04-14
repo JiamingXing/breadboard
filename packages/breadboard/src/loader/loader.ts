@@ -96,16 +96,31 @@ export class Loader implements GraphLoader {
   #graphProviders: GraphProvider[];
 
   constructor(graphProviders: GraphProvider[]) {
+    console.log("Load constructor called...");
+    for (const graphProvider of graphProviders) {
+      console.log("Printing each graph provider in the constructor...");
+      console.dir(graphProvider);
+    }
     this.#graphProviders = graphProviders;
   }
 
   async #loadWithProviders(url: URL): Promise<GraphLoaderResult> {
+    console.log("Loader.#loadWithProviders called... for url %s", url);
+    console.log("Printing all graph providers in this loader...");
+    for (const graphProvider of this.#graphProviders) {
+      console.log("Printing each provider...");
+      console.dir(graphProvider);
+    }
     for (const provider of this.#graphProviders) {
       const capabilities = provider.canProvide(url);
+      console.log("Priting graph provider capability...");
+      console.dir(capabilities);
       if (capabilities === false) {
         continue;
       }
       if (capabilities.load) {
+        // Instead of loading graph from data store, set the baord here...
+        console.log("Prepare to load board with the first capable provider...");
         const response = await provider.load(url);
         const graph: GraphDescriptor =
           typeof response == "string" ? JSON.parse(response) : response;
@@ -167,6 +182,7 @@ export class Loader implements GraphLoader {
     path: string,
     context: GraphLoaderContext
   ): Promise<GraphLoaderResult> {
+    console.log("Loader.load called...");
     const supergraph = context.outerGraph;
     // This is a special case, when we don't have URLs to resolve against.
     // We are a hash path, and we are inside of a supergraph that doesn't
@@ -180,8 +196,12 @@ export class Loader implements GraphLoader {
 
     const url = getGraphUrl(path, context);
 
+    console.log("Printing the url...");
+    // board url... http://localhost:3000/boards/@110099467630814779452/jimmy-test
+    console.dir(url);
     // If we don't have a hash, just load the graph.
     if (!url.hash) {
+      console.log("url does not have hash...");
       return await this.#loadOrWarn(url);
     }
 

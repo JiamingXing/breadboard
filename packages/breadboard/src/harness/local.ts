@@ -102,29 +102,50 @@ const maybeSaveResult = (result: BreadboardRunResult, last?: LastNode) => {
 };
 
 const load = async (config: RunConfig): Promise<GraphToRun> => {
+  console.log("Creating graph to run in run locally...");
   const base = baseURL(config);
+  console.log("Printing base url...");
+  // sentinel://sentinel/sentinel
+  console.dir(base);
+  console.log("Printing loader from config...");
+  // Loader {} Need to figure out where this loader is initialized...
+  console.dir(config.loader);
+
+  if (config.loader !== null) {
+    console.log("loader from config is not null...");
+  }
   const loader = config.loader || createLoader();
   const loadResult = await loader.load(config.url, { base });
+
   if (!loadResult.success) {
     throw new Error(
       `Unable to load graph from "${config.url}": ${loadResult.error}`
     );
   }
+  console.log("Printing load result(GraphToRun)...");
+  console.dir(loadResult);
   return loadResult;
 };
 
 export async function* runLocally(config: RunConfig, kits: Kit[]) {
-  console.log("Start run locally... Printing the runConfig");
+  console.log("Start run locally... That's where the real execution logic starts...Printing the runConfig");
   console.dir(config);
   yield* asyncGen<HarnessRunResult>(async (next) => {
     const graphToRun: GraphToRun = config.runner
       ? { graph: config.runner }
       : await load(config);
+
+    console.log("Creare loder in local...");
     const loader = config.loader || createLoader();
+    console.log("Creare default data store in local...");
     const store = config.store || createDefaultDataStore();
+    console.log("Creare file system in local...");
     const fileSystem = config.fileSystem;
     const { base, signal, inputs, state, start, stopAfter, graphStore } =
       config;
+    console.log("Prining start ... %s", start);
+    console.log("Prining stopAfter ... %s", stopAfter);
+    console.log("Prining signal ... %s", signal);
     console.log("Prepare to start the real run graph logic from run locally....");
     try {
       let last: LastNode | undefined;
@@ -150,6 +171,8 @@ export async function* runLocally(config: RunConfig, kits: Kit[]) {
         stopAfter,
         graphStore,
       })) {
+        console.log("Priting data from run graph...")
+        console.dir(data);
         last = maybeSaveResult(data, last);
         // data is type of BreadboardRunResult
         await next(fromRunnerResult(data));

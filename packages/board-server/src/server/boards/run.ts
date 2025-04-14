@@ -62,7 +62,6 @@ async function runHandler(
   const userId = res.locals.userId;
   console.log("Get userId from request token: %s", userId);
 
-  // using a WritableStream to send Server-Sent Events to the client
   if (!userId) {
     await writer.write([
       "graphstart",

@@ -24,6 +24,7 @@ export function createBoardLoader(
   store: BoardServerStore,
   userId: string
 ): BoardServerLoadFunction {
+  console.log("Creating board loader and this will be used to build board server provider, then used in run board function....");
   return async (path: string): Promise<GraphDescriptor | null> => {
     const { userStore, boardName } = parsePath(path);
     if (!userStore || !boardName) {
@@ -80,6 +81,7 @@ export class BoardServerProvider implements BoardServer {
     path: string,
     loader: BoardServerLoadFunction
   ) {
+    console.log("board server provider constuctor called... serverUrl is %s and path is %s", serverUrl, path);
     this.#serverUrl = serverUrl;
     this.#path = path;
     this.#loader = loader;
@@ -106,6 +108,7 @@ export class BoardServerProvider implements BoardServer {
   }
 
   canProvide(url: URL): false | GraphProviderCapabilities {
+    console.log("Checking if board server provider can provide...");
     const sameServer = url.origin === this.#serverUrl;
     return url.href.endsWith(this.#path) || sameServer
       ? {
@@ -131,11 +134,13 @@ export class BoardServerProvider implements BoardServer {
     // This check is necessary because this.#path might actually be of a
     // different origin than the URL (commonly the case when board server is
     // running from local server).
+    console.log("Board server provider load function called...");
     const sameServer = url.origin === this.#serverUrl;
     const path = sameServer ? trimBoard(url.pathname) : this.#path;
     if (this.#cache.has(path)) {
       return this.#cache.get(path)!;
     }
+    console.log("Loader function of board server provider called...");
     const graph = await this.#loader(path);
     if (graph) {
       this.#cache.set(path, graph);

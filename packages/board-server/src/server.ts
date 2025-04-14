@@ -47,13 +47,12 @@ export function addMiddleware(server: Express, config: ServerConfig) {
 
 function createStore(storageProvider: StorageProvider): BoardServerStore {
   console.log("storage provider is: %s", storageProvider);
-  return new InMemoryStorageProvider();
-  // switch (storageProvider) {
-  //   case "in-memory":
-  //     return new InMemoryStorageProvider();
-  //   case "firestore":
-  //     return new FirestoreStorageProvider();
-  // }
+  switch (storageProvider) {
+    case "in-memory":
+      return new InMemoryStorageProvider();
+    case "firestore":
+      return new FirestoreStorageProvider();
+  }
 }
 
 export function createRouter(config: ServerConfig): Router {

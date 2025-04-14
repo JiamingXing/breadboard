@@ -44,6 +44,8 @@ export const handleRunGraphRequest = async (
     console.log("Resume from previous state with next as %s", next);
   }
   const resumeFrom = await stateStore?.load(next);
+  console.log("Printing resumeFrom...");
+  console.dir(resumeFrom);
 
   const state = createRunStateManager(resumeFrom, inputs);
 

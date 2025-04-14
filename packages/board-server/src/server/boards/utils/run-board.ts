@@ -45,7 +45,7 @@ export const runBoard = async ({
   // TODO: Figure out if this is the right thing to do here.
   store.createGroup("run-board");
 
-  console.log("Bring up the real board server here...");
+  console.log("Bring up the real board server here... the loader here is a function...");
   const boardServerProvider = new BoardServerProvider(serverUrl, path, loader);
   console.dir(boardServerProvider);
   await boardServerProvider.ready();

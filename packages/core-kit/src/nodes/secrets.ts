@@ -25,13 +25,17 @@ type SecretWorkerResponse = {
 };
 
 const getEnvironmentValue = (key: string) => {
+  console.log("Trying to get secrets by key %s", key);
   const env = environment();
   if (env === "node") {
+    console.log("environment is node, read value for key %s", key);
     return process.env[key];
   } else if (env === "browser") {
+    console.log("environment is browser, read value for key %s", key);
     // How do we avoid namespace clashes?
     return globalThis.localStorage.getItem(key);
   } else if (env === "worker") {
+    console.log("environment is worker, read value for key %s", key);
     // TODO: Calling main thread is a general pattern, figure out a way to
     // avoid a special call here. Maybe some Board util?
     throw new Error(
@@ -75,11 +79,15 @@ const secrets = defineNodeType({
   }),
   invoke: (inputs) => {
     const { keys } = inputs as SecretInputs;
+    console.log("Printing keys while accessing secrets component...");
+    console.dir(keys);
+    // retrieve the secrets from environment value, but when does the environment value for this key set up..
     return Object.fromEntries(
       keys.map((key) => [key, requireNonEmpty(key, getEnvironmentValue(key))])
     );
   },
 });
+// This is a TypeScript (and JavaScript ES modules) syntax for specifying the primary value that a module exports. 
 export default secrets;
 
 /**

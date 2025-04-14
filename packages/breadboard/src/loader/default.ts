@@ -41,9 +41,13 @@ export const loadFromFile = async (path: string) => {
 };
 
 export const loadWithFetch = async (url: string | URL) => {
+  console.log("load the board from the given url... %s", url);
+  // Looks like it is calling another API to fetch the board from the server...
   let response;
   try {
     response = await fetch(url);
+    console.log("Fetch board response....");
+    console.dir(response);
   } catch (e) {
     // Try again with credentials.
     // This is useful for sites that require authentication.
@@ -98,6 +102,7 @@ export class DefaultBoardServer implements BoardServer {
   }
 
   canProvide(url: URL): false | GraphProviderCapabilities {
+    console.log("Checking provider can provide url or not...");
     if (url.protocol === "http:" || url.protocol === "https:") {
       return {
         load: true,

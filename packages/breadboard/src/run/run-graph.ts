@@ -41,8 +41,8 @@ export async function* runGraph(
   const { inputs: initialInputs, start, stopAfter, ...context } = args;
   const { probe, state, invocationPath = [] } = context;
 
-  console.log("Printing the current context...");
-  console.dir(context);
+  // console.log("Printing the current context...");
+  // console.dir(context);
 
   graphToRun = resolveGraphUrls(graphToRun);
 

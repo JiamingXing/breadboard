@@ -1,0 +1,97 @@
+{
+    "title": "jimmy-test",
+    "description": "",
+    "version": "0.0.1",
+    "nodes": [
+      {
+        "id": "input-68eecc49",
+        "type": "input",
+        "metadata": {
+          "title": "Input",
+          "visual": {
+            "x": 160,
+            "y": 120,
+            "collapsed": "collapsed",
+            "outputHeight": 88
+          },
+          "userModified": false
+        },
+        "configuration": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "input1": {
+                "type": "array",
+                "title": "input context",
+                "items": {
+                  "type": "object",
+                  "examples": [],
+                  "behavior": [
+                    "llm-content"
+                  ],
+                  "default": "[{\"role\":\"user\",\"parts\":[{\"text\":\"\"}]}]"
+                },
+                "description": "",
+                "default": "[{\"parts\":[{\"text\":\"Default input doc content\"}],\"role\":\"user\"}]"
+              }
+            },
+            "required": []
+          }
+        }
+      },
+      {
+        "id": "appendToDoc-d260317f",
+        "type": "appendToDoc",
+        "metadata": {
+          "title": "Append To Doc",
+          "visual": {
+            "x": 680,
+            "y": 200,
+            "collapsed": "collapsed",
+            "outputHeight": 88
+          },
+          "userModified": false
+        },
+        "configuration": {
+          "title": "test doc"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "input-68eecc49",
+        "to": "appendToDoc-d260317f",
+        "out": "input1",
+        "in": "context"
+      }
+    ],
+    "metadata": {
+      "visual": {
+        "presentation": {
+          "themes": {
+            "bc7f5dde-d59f-4262-937c-9e7cef7e7635": {
+              "themeColors": {
+                "primaryColor": "#246db5",
+                "secondaryColor": "#5cadff",
+                "backgroundColor": "#ffffff",
+                "textColor": "#1a1a1a",
+                "primaryTextColor": "#ffffff"
+              },
+              "template": "basic",
+              "splashScreen": {
+                "storedData": {
+                  "handle": "/images/app/generic-flow.jpg",
+                  "mimeType": "image/jpeg"
+                }
+              }
+            }
+          },
+          "theme": "bc7f5dde-d59f-4262-937c-9e7cef7e7635"
+        }
+      },
+      "parameters": {},
+      "userModified": true,
+      "tags": []
+    },
+    "assets": {}
+  }
